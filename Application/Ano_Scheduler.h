@@ -10,8 +10,8 @@
 
 typedef struct
 {
-	void(*task_func)(u32 dT_us);
-//	u16 rate_hz;
+	void(*task_func)(void);
+	u16 rate_hz;
 	u32 interval_ticks;
 	u32 last_run;
 }sched_task_t;

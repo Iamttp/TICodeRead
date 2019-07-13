@@ -88,16 +88,17 @@ void Drv_BspInit(void)
 	sens_hd_check.mag_ok = 1;       //	
 	
 	//电机输出初始化
-	Drv_PwmOutInit();
+  Drv_PwmOutInit();
 	//ADC初始化
-	Drv_AdcInit();
+//	Drv_AdcInit();
 	//滴答时钟初始化
 	SysTick_Init();	
 	//串口初始化
-	Drv_Uart4Init(500000);	//接光流
-	Drv_Uart2Init(500000);	//接数传
-	Drv_Uart3Init(500000);  //接OPMV
-	Drv_GpsPin_Init();//
+	Drv_Uart1Init(115200);//徐 添加launchpad板载串口
+//	Drv_Uart4Init(500000);	//接光流
+//	Drv_Uart2Init(500000);	//接数传
+//	Drv_Uart3Init(500000);  //接OPMV
+//	Drv_GpsPin_Init();//
 	
 	//====fc
 	//飞控传感器计算初始化
