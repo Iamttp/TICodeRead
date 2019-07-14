@@ -86,30 +86,22 @@ static void Loop_Task_9(void)	//50ms执行一次
 //	Ano_Parame_Write_task(50);
 }
 
-
-///////////////////////////////////////////-------- 注释了貌似是数传（FlyCtrl_Task） / UWB (Ano_UWB_Data_Calcu_Task) 
-///////////////////////////////////////////-------- 		/ 特殊的姿态控制 (Loc_1level_Ctrl) / OPMV
-
-static void Loop_Task_8(void)	//20ms执行一次
-{
-//	u8 dT_ms = 20;//(u8)(dT_us *1e-3f);
-	//==========================
-	//
-	/*罗盘数据处理任务*/
-	Mag_Update_Task(20);
-	/*程序指令控制*/
-//	FlyCtrl_Task(20);
-//	/*--*/
-//	Ano_UWB_Data_Calcu_Task(20);
-//	/*位置速度环控制*/
-//	Loc_1level_Ctrl(20,CH_N);
-//	/*OPMV检测是否掉线*/
-//	OpenMV_Offline_Check(20);
-//	/*OPMV色块追踪数据处理任务*/
-//	ANO_CBTracking_Task(20);
-//	/*OPMV色块追踪控制任务*/	
-//	ANO_CBTracking_Ctrl_Task(20);
-}
-
 。。。。。 // 应该是为了先测试传感器，还注释了一些（具体看log Ano_Scheduler.c）
+```
 
+#
+	起飞程序
+
+* 取消了对Ano_Scheduler.c的部分注释
+
+
+* 在Ano_Power.c里面直接对电压赋值
+
+```cpp
+Plane_Votage = 15;//@徐 硬件原因直接赋值
+```
+
+* 在Ano_RC.c中可能需要根据遥控器更改通道值，这里没有改
+```cpp
+//		CH_N[1]=-CH_N[1];//@徐，遥控器俯仰通道反了，所以加个负号
+```

@@ -77,15 +77,15 @@ static void Loop_Task_0(void)//1ms执行一次
 	/*获取WC_Z加速度*/
 	WCZ_Acc_Get_Task();
 	WCXY_Acc_Get_Task();
+	
+	/*飞行状态任务*/
+	Flight_State_Task(1,CH_N);
+	
+	/*开关状态任务*/
+	Swtich_State_Task(1);
+	
 
-//	/*飞行状态任务*/
-//	Flight_State_Task(1,CH_N);
-
-//	/*开关状态任务*/
-//	Swtich_State_Task(1);
-
-
-//	/*数传数据交换*/
+	/*数传数据交换*/
 //	ANO_DT_Data_Exchange();	
 }
 
@@ -96,10 +96,10 @@ static void Loop_Task_1(void)	//2ms执行一次
 //	t1_dT_s = (float)dT_us *1e-6f;
 	//========================
 	/*姿态角速度环控制*/
-//	Att_1level_Ctrl(2*1e-3f);
+	Att_1level_Ctrl(2*1e-3f);
 	
 	/*电机输出控制*/
-	//Motor_Ctrl_Task(2);	
+	Motor_Ctrl_Task(2);	
 
 //////////////////////////////////////////////////////////////////////	
 }
@@ -114,7 +114,7 @@ static void Loop_Task_2(void)	//6ms执行一次
 	calculate_RPY();
 	
 	/*姿态角度环控制*/
-//	Att_2level_Ctrl(6e-3f,CH_N);
+	Att_2level_Ctrl(6e-3f,CH_N);
 
 	//
 	
@@ -124,32 +124,32 @@ static void Loop_Task_2(void)	//6ms执行一次
 
 static void Loop_Task_5(void)	//11ms执行一次
 {	
-////////////////////////////////////////////////////////////////////////	
+//////////////////////////////////////////////////////////////////////	
 //	float t2_dT_s = (float)dT_us *1e-6f;//0.008f;//
-//	//========================
-//	/*遥控器数据处理*/
-//	RC_duty_task(11);
-//	
-//	/*飞行模式设置任务*/
-//	Flight_Mode_Set(11);
-//	
+	//========================
+	/*遥控器数据处理*/
+	RC_duty_task(11);
+	
+	/*飞行模式设置任务*/
+	Flight_Mode_Set(11);
+	
 
-//	
-//	/*高度数据融合任务*/
-//	WCZ_Fus_Task(11);
-//	GPS_Data_Processing_Task(11);
-//	
-//	/*高度速度环控制*/
-//	Alt_1level_Ctrl(11e-3f);
-//	
-//	/*高度环控制*/
-//	Alt_2level_Ctrl(11e-3f);
-//	
-//	/*--*/	
-//	AnoOF_DataAnl_Task(11);
+	
+	/*高度数据融合任务*/
+	WCZ_Fus_Task(11);
+	GPS_Data_Processing_Task(11);
+	
+	/*高度速度环控制*/
+	Alt_1level_Ctrl(11e-3f);
+	
+	/*高度环控制*/
+	Alt_2level_Ctrl(11e-3f);
+	
+	/*--*/	
+	AnoOF_DataAnl_Task(11);
 
-//	/*灯光控制*/	
-//	LED_Task2(11);
+	/*灯光控制*/	
+	LED_Task2(11);
 
 
 //////////////////////////////////////////////////////////////////////		
@@ -159,17 +159,17 @@ static void Loop_Task_5(void)	//11ms执行一次
 
 static void Loop_Task_8(void)	//20ms执行一次
 {
-//	u8 dT_ms = 20;//(u8)(dT_us *1e-3f);
+	u8 dT_ms = 20;//(u8)(dT_us *1e-3f);
 	//==========================
 	//
 	/*罗盘数据处理任务*/
 	Mag_Update_Task(20);
 	/*程序指令控制*/
-//	FlyCtrl_Task(20);
-//	/*--*/
-//	Ano_UWB_Data_Calcu_Task(20);
-//	/*位置速度环控制*/
-//	Loc_1level_Ctrl(20,CH_N);
+	FlyCtrl_Task(20);
+	/*--*/
+	Ano_UWB_Data_Calcu_Task(20);
+	/*位置速度环控制*/
+	Loc_1level_Ctrl(20,CH_N);
 //	/*OPMV检测是否掉线*/
 //	OpenMV_Offline_Check(20);
 //	/*OPMV色块追踪数据处理任务*/
@@ -183,11 +183,11 @@ static void Loop_Task_9(void)	//50ms执行一次
 {
 	//
 	/*电压相关任务*/
-//	Power_UpdateTask(50);
-//	//恒温控制（不能直接注释掉，否则开机过不了校准）
-//	Thermostatic_Ctrl_Task(50);
-//	//	/*延时存储任务*/
-//	Ano_Parame_Write_task(50);
+	Power_UpdateTask(50);
+	//恒温控制（不能直接注释掉，否则开机过不了校准）
+	Thermostatic_Ctrl_Task(50);
+	//	/*延时存储任务*/
+	Ano_Parame_Write_task(50);
 }
 
 
@@ -228,7 +228,7 @@ u8 Main_Task(void)
 //		lt0_run_flag--;
 //		Loop_Task_0();
 //	}
-	
+
 	//循环判断其他所有线程任务，是否应该执行
 	uint32_t time_now,delta_time_us;
 	for(index=0;index < TASK_NUM;index++)

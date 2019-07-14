@@ -36,7 +36,7 @@ void Power_UpdateTask(u8 dT_ms)
 
 	
 	Plane_Votage = voltage_f *0.001f;
-//	Plane_Votage = 15;
+	Plane_Votage = 15;//@徐 硬件原因直接赋值
 
 
 		
