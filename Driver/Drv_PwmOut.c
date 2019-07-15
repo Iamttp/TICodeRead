@@ -10,10 +10,10 @@ void Drv_PwmOutInit(void)
 	ROM_SysCtlPeripheralEnable( SYSCTL_PERIPH_GPIOA );
 	ROM_SysCtlPeripheralEnable( SYSCTL_PERIPH_GPIOB );
 	ROM_SysCtlPeripheralEnable( SYSCTL_PERIPH_GPIOF );
-	/* Set divider to 80M/64=0.8us ¾«¶ÈÎª0.8*/
+	/* Set divider to 80M/64=0.8us ï¿½ï¿½ï¿½ï¿½Îª0.8*/
 	ROM_SysCtlPWMClockSet(SYSCTL_PWMDIV_64); 
 	ROM_SysCtlDelay(2);
-	/*GPIO¿ÚÅäÖÃ*/
+	/*GPIOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	ROM_GPIOPinConfigure(M0TO_PWM1_FUNCTION);
 	ROM_GPIOPinConfigure(M0TO_PWM2_FUNCTION);
 	ROM_GPIOPinConfigure(M0TO_PWM3_FUNCTION);
@@ -22,7 +22,7 @@ void Drv_PwmOutInit(void)
 	ROM_GPIOPinTypePWM(GPIOB_BASE, GPIO_PIN_7);//M0PWM1
 	ROM_GPIOPinTypePWM(GPIOB_BASE, GPIO_PIN_4);//M0PWM2
 	ROM_GPIOPinTypePWM(GPIOB_BASE, GPIO_PIN_5);//M0PWM3
-	/*PF0½âËø²Ù×÷*/
+	/*PF0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	HWREG(GPIOF_BASE + GPIO_O_LOCK) = GPIO_LOCK_KEY; 
 	HWREG(GPIOF_BASE + GPIO_O_CR) = GPIO_PIN_0;
 	HWREG(GPIOF_BASE + GPIO_O_LOCK) = 0x00;
@@ -37,31 +37,31 @@ void Drv_PwmOutInit(void)
 	
 	ROM_GPIOPinConfigure(HEAT_PWM_FUNCTION);
 	ROM_GPIOPinTypePWM(GPIOA_BASE, GPIO_PIN_7);//M1PWM3
-	/*½«PWM·¢ÉúÆ÷ÅäÖÃÎªµ¹¼ÆÊ±Ä£Ê½£¬²¢Á¢¼´¸üÐÂ²ÎÊý*/
+	/*ï¿½ï¿½PWMï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ê±Ä£Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â²ï¿½ï¿½ï¿½*/
 	ROM_PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
 	ROM_PWMGenConfigure(PWM0_BASE, PWM_GEN_1, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
 	ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_1, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 	ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_2, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
 	ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_3, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
-	/*ÖÜÆÚÎª0.8us*3125=2500us=2.5ms(400 Hz)*/
+	/*ï¿½ï¿½ï¿½ï¿½Îª0.8us*3125=2500us=2.5ms(400 Hz)*/
 	ROM_PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, PWM_PERIOD_MAX); 
 	ROM_PWMGenPeriodSet(PWM0_BASE, PWM_GEN_1, PWM_PERIOD_MAX);
 	ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_1, PWM_PERIOD_MAX); 
 	ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_2, PWM_PERIOD_MAX); 
 	ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_3, PWM_PERIOD_MAX);
-	/*Ê¹ÄÜ¶¨Ê±Æ÷*/	
+	/*Ê¹ï¿½Ü¶ï¿½Ê±ï¿½ï¿½*/	
 	ROM_PWMGenEnable(PWM0_BASE, PWM_GEN_0);
 	ROM_PWMGenEnable(PWM0_BASE, PWM_GEN_1);
 	ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_1);
 	ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_2);
 	ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_3);
-	/* Ê¹ÄÜÊä³ö */
+	/* Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	ROM_PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT | PWM_OUT_2_BIT | PWM_OUT_3_BIT, true);
 	ROM_PWMOutputState(PWM1_BASE, PWM_OUT_4_BIT | PWM_OUT_5_BIT | PWM_OUT_6_BIT | PWM_OUT_7_BIT, true);
 	
 	ROM_PWMOutputState(PWM1_BASE, PWM_OUT_3_BIT, true);
 	
-	/* À­µÍËùÓÐÊä³ö */	
+	/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */	
 	Drv_HeatSet(0);
 	for ( u8 i=0; i<8; i++)
 	{
@@ -69,44 +69,46 @@ void Drv_PwmOutInit(void)
 	}
 }
 /**********************************************************************************************************
-*º¯ Êý Ãû: Drv_MotorPWMSet
-*¹¦ÄÜËµÃ÷: µç»úPWMÊä³öÖµÉèÖÃ
-*ÐÎ    ²Î: PWMÖµ£¨0-1000£©
-*·µ »Ø Öµ: ÎÞ
-*±¸    ×¢:·½²¨µÄÖÜÆÚ(ÒÑÅäÖÃÎª400hz 2.5ms)
-*         ¾ö¶¨·½²¨µÄÕ¼¿Õ±È(°´ÕÕPWMÐ­ÒéÓ¦¸ÃÎª1250/3125     ~   2500/3125)
-											40%(×îµÍÓÍÃÅ) ~   80%(×î¸ßÓÍÃÅ)
+*ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½: Drv_MotorPWMSet
+*ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½: ï¿½ï¿½ï¿½PWMï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
+*ï¿½ï¿½    ï¿½ï¿½: PWMÖµï¿½ï¿½0-1000ï¿½ï¿½
+*ï¿½ï¿½ ï¿½ï¿½ Öµ: ï¿½ï¿½
+*ï¿½ï¿½    ×¢:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª400hz 2.5ms)
+*         ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½Õ±ï¿½(ï¿½ï¿½ï¿½ï¿½PWMÐ­ï¿½ï¿½Ó¦ï¿½ï¿½Îª1250/3125     ~   2500/3125)
+											40%(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) ~   80%(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 **********************************************************************************************************/
 void Drv_MotorPWMSet(uint8_t Motor,uint16_t PwmValue)
 {
-	/*Ê¹ÓÃPWMÐ­Òé½âÎö*/
+	/*Ê¹ï¿½ï¿½PWMÐ­ï¿½ï¿½ï¿½ï¿½ï¿½*/
   u16 tempval ;
 	if(PwmValue>999) PwmValue = 999;
-	tempval = 1.25f*PwmValue+1250.0f;//0-1000¶ÔÓ¦1250-2500
-	/*ÅäÖÃ±È½Ï²¶»ñ¼Ä´æÆ÷µÄÔ¤×°ÔØÖµ*/
+	tempval = 1.25f*PwmValue+1250.0f;//0-1000ï¿½ï¿½Ó¦1250-2500
+	/*ï¿½ï¿½ï¿½Ã±È½Ï²ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ô¤×°ï¿½ï¿½Öµ*/
 	if(Motor == 0)
-		ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,tempval);
+		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_4,tempval);
 	if(Motor == 1)
-		ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_1,tempval);
+		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_5,tempval);
 	if(Motor == 2)	
 		ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_2,tempval);
 	if(Motor == 3)	
 		ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_3,tempval);
-	if(Motor == 4)	
-		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_4,tempval);
-	if(Motor == 5)	
-		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_5,tempval);
-	if(Motor == 6)	
-		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_6,tempval);
-	if(Motor == 7)	
-		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_7,tempval);
+//	if(Motor == 4)	
+//			ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,tempval);
+
+//	if(Motor == 5)	
+//		ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_1,tempval);
+
+//	if(Motor == 6)	
+//		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_6,tempval);
+//	if(Motor == 7)	
+//		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_7,tempval);
 }
 /**********************************************************************************************************
-*º¯ Êý Ãû: Drv_HeatSet
-*¹¦ÄÜËµÃ÷: ¼ÓÈÈPWMÊä³öÖµÉèÖÃ
-*ÐÎ    ²Î: PWMÖµ£¨0-1000£©
-*·µ »Ø Öµ: ÎÞ
-*±¸    ×¢:·½²¨µÄÖÜÆÚ(ÒÑÅäÖÃÎª400hz 2.5ms)
+*ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½: Drv_HeatSet
+*ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½PWMï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
+*ï¿½ï¿½    ï¿½ï¿½: PWMÖµï¿½ï¿½0-1000ï¿½ï¿½
+*ï¿½ï¿½ ï¿½ï¿½ Öµ: ï¿½ï¿½
+*ï¿½ï¿½    ×¢:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª400hz 2.5ms)
 **********************************************************************************************************/
 void Drv_HeatSet(u16 val)
 {

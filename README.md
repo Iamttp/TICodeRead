@@ -1,6 +1,7 @@
 首先用了git控制了最原始代码，然后替换了徐师兄程序
 
-#
+#### 传感器测试程序
+
 	7月12 
 	1.测试飞控底板成功，能读取传感器数据，未起飞测试
 	2.发现匿名这款程序时间片不仅使用了定时器，还利用icm20602的中断引脚
@@ -89,10 +90,9 @@ static void Loop_Task_9(void)	//50ms执行一次
 。。。。。 // 应该是为了先测试传感器，还注释了一些（具体看log Ano_Scheduler.c）
 ```
 
-#
-	起飞程序
+#### 起飞程序
 
-* 取消了对Ano_Scheduler.c的部分注释
+* 取消了对Ano_Scheduler.c的部分注释, 所以，主要是注释了数传和OPMV
 
 
 * 在Ano_Power.c里面直接对电压赋值
@@ -104,4 +104,32 @@ Plane_Votage = 15;//@徐 硬件原因直接赋值
 * 在Ano_RC.c中可能需要根据遥控器更改通道值，这里没有改
 ```cpp
 //		CH_N[1]=-CH_N[1];//@徐，遥控器俯仰通道反了，所以加个负号
+```
+
+#### 起飞程序1.1
+
+Drv_PwmOut.c 更改了
+
+```cpp
+/////////////////////////////////////------ old pwm输出
+	if(Motor == 0)
+		ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,tempval);
+	if(Motor == 1)
+		ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_1,tempval);
+
+/////////////////////////////////////------ new pwm输出的0，1号电机由4，5路输出， 注释了4，5，6，7路电机
+	if(Motor == 0)
+		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_4,tempval);
+	if(Motor == 1)
+		ROM_PWMPulseWidthSet(PWM1_BASE,PWM_OUT_5,tempval);
+	if(Motor == 2)	
+		ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_2,tempval);
+	if(Motor == 3)	
+		ROM_PWMPulseWidthSet(PWM0_BASE,PWM_OUT_3,tempval);
+```
+
+Ano_RC.c 取消了注释
+
+```cpp
+		CH_N[1]=-CH_N[1];//@徐，遥控器俯仰通道反了，所以加个负号
 ```
