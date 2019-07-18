@@ -33,7 +33,7 @@
 #include "Ano_UWB.h"
 #include "Drv_OpenMV.h"
 #include "Ano_OPMV_CBTracking_Ctrl.h"
-
+#include "Drv_Uart.h"
 
 
 
@@ -86,7 +86,7 @@ static void Loop_Task_0(void)//1ms执行一次
 	
 
 	/*数传数据交换*/
-//	ANO_DT_Data_Exchange();	
+	ANO_DT_Data_Exchange();	
 }
 
 static void Loop_Task_1(void)	//2ms执行一次
@@ -171,14 +171,14 @@ static void Loop_Task_8(void)	//20ms执行一次
 	/*位置速度环控制*/
 	Loc_1level_Ctrl(20,CH_N);
 //	/*OPMV检测是否掉线*/
-//	OpenMV_Offline_Check(20);
+	OpenMV_Offline_Check(20);
 //	/*OPMV色块追踪数据处理任务*/
-//	ANO_CBTracking_Task(20);
+	ANO_CBTracking_Task(20);
 //	/*OPMV色块追踪控制任务*/	
-//	ANO_CBTracking_Ctrl_Task(20);
+	ANO_CBTracking_Ctrl_Task(20);
 }
 
-
+static u8 my_data_to_send[50];	//发送数据缓存
 static void Loop_Task_9(void)	//50ms执行一次
 {
 	//
@@ -188,6 +188,22 @@ static void Loop_Task_9(void)	//50ms执行一次
 	Thermostatic_Ctrl_Task(50);
 	//	/*延时存储任务*/
 	Ano_Parame_Write_task(50);
+	
+	
+	u8 _cnt = 0;
+	
+	u16 t_pit = (u16)(imu_data.pit*100);
+	u16 t_rol = (u16)(imu_data.rol*100);
+	u16 t_yaw = (u16)(imu_data.yaw*100);
+	
+	my_data_to_send[_cnt++]=0xaa;
+	my_data_to_send[_cnt++]=0xaa;
+	my_data_to_send[_cnt++]=t_pit/256;
+	my_data_to_send[_cnt++]=t_pit%256;
+	my_data_to_send[_cnt++]=0x00;
+	my_data_to_send[_cnt++]=0x00;
+	
+	Drv_Uart5SendBuf(my_data_to_send, _cnt);
 }
 
 

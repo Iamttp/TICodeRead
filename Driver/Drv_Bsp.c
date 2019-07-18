@@ -56,53 +56,54 @@ void Drv_SenserCsPinInit(void)
 
 void Drv_BspInit(void)
 {
-	/*����ϵͳ��ƵΪ80M*/
+	/*设置系统主频为80M*/
 	ROM_SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ |SYSCTL_OSC_MAIN);
-	/*�ж����ȼ��������*/
+	/*中断优先级组别设置*/
 	NVIC_SetPriorityGrouping(0x03);
-	/*�����������㵥Ԫ*/	
+	/*开启浮点运算单元*/	
 	ROM_FPULazyStackingEnable();
 	ROM_FPUEnable();
 	
-	//���ݳ�ʼ��
+	//数据初始化
 	Dvr_ParamterInit();
-	//��ȡ��ʼ����
+	//读取初始数据
 	Para_Data_Init();
-	//�ƹ��ʼ��
+	//灯光初始化
 	Dvr_LedInit();
-	//����USB���⴮�ڳ�ʼ��
+	//板载USB虚拟串口初始化
 	AnoUsbCdcInit();
 	
-	//ң�ؽ���ģʽ��ʼ��
+	//遥控接收模式初始化
 	Remote_Control_Init();
 
-	//spiͨ�ų�ʼ��
+	//spi通信初始化
 	Drv_Spi0Init();
 	Drv_SenserCsPinInit();
-	//��ʼ��ICM
+	//初始化ICM
 	sens_hd_check.acc_ok = sens_hd_check.gyro_ok =
 	Drv_Icm20602Init();
-	//��ʼ����ѹ��
+	//初始化气压计
 	sens_hd_check.baro_ok = Drv_Spl0601Init();
-	//�������OK���������̲�������㣨ע���˴�û���������Ƿ������ļ�����
+	//标记罗盘OK，否则罗盘不参与解算（注：此处没有做罗盘是否正常的检测程序）
 	sens_hd_check.mag_ok = 1;       //	
 	
-	//��������ʼ��
+	//电机输出初始化
 	Drv_PwmOutInit();
-	//ADC��ʼ��
+	//ADC初始化
 	Drv_AdcInit();
-	//�δ�ʱ�ӳ�ʼ��
+	//滴答时钟初始化
 	SysTick_Init();	
-	//���ڳ�ʼ��
-	Drv_Uart4Init(500000);	//�ӹ���
-	Drv_Uart2Init(500000);	//������
-	Drv_Uart3Init(500000);  //��OPMV
+	//串口初始化
+	Drv_Uart5Init(115200);	// 自定义数传
+	Drv_Uart4Init(500000);	//接光流
+	// Drv_Uart2Init(500000);	//接数传
+	Drv_Uart3Init(500000);  //接OPMV
 	Drv_GpsPin_Init();//
 	
 	//====fc
-	//�ɿش����������ʼ��
+	//飞控传感器计算初始化
 	Sensor_Basic_Init();	
-	//�ɿ�PID��ʼ��
+	//飞控PID初始化
 	All_PID_Init();
 }
 
