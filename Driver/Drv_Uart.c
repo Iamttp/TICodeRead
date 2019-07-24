@@ -189,6 +189,8 @@ void Drv_Uart3TxCheck(void)
 u8 U4TxDataTemp[256];
 u8 U4TxInCnt = 0;
 u8 U4TxOutCnt = 0;
+static u8 my_flag = 0;
+u16 my_jig = 0;
 void UART4_IRQHandler(void)
 {
 	uint8_t com_data;
@@ -200,7 +202,28 @@ void UART4_IRQHandler(void)
 	while(ROM_UARTCharsAvail(UART7_BASE))		
 	{			
 		com_data=ROM_UARTCharGet(UART7_BASE);
-		AnoOF_GetOneByte(com_data);
+		// AnoOF_GetOneByte(com_data);
+		
+		if(com_data==0x5a && my_flag == 0)
+			my_flag = 1;
+		else if(com_data==0x5a && my_flag == 1)
+			my_flag = 2;
+		else if(com_data==0x15 && my_flag == 2)
+			my_flag = 3;
+		else if(com_data==0x03 && my_flag == 3)
+			my_flag = 4;
+		else if(my_flag == 4)
+		{
+			my_jig = (com_data << 8);
+			my_flag++;
+		}
+		else if(my_flag == 5)
+		{
+			my_jig |= (com_data);
+			my_flag = 0;
+		}		
+		else
+			my_flag = 0;
 	}
 	if(flag & UART_INT_TX)
 	{

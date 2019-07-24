@@ -10,6 +10,7 @@
 #include "Ano_OF.h"
 
 u16 test_time_cnt;
+extern u16 my_jig;
 void Fc_Sensor_Get()//1ms
 {
 	static u8 cnt;
@@ -232,6 +233,7 @@ void WCZ_Fus_Task(u8 dT_ms)
 	{
 		ref_height_used = ref_height_get_1;
 	}
+	ref_height_used = my_jig/10.0;
 	
 	//世界z方向高度信息融合
 	WCZ_Data_Calc(dT_ms,wcz_f_pause,(s32)wcz_acc_use,(s32)(ref_height_used));

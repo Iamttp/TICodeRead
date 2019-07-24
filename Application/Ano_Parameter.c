@@ -115,7 +115,7 @@ void Parame_Reset(void)
 	Ano_Parame.set.lowest_power_voltage = 3.4f *3;
 	
 	Ano_Parame.set.auto_take_off_height = 0;//cm
-	Ano_Parame.set.auto_take_off_speed = 150;
+	Ano_Parame.set.auto_take_off_speed = 200;
 	Ano_Parame.set.auto_landing_speed = 60;
 	
 	Ano_Parame.set.idle_speed_pwm = 20;//20%

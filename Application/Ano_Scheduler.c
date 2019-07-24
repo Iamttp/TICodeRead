@@ -34,7 +34,8 @@
 #include "Drv_OpenMV.h"
 #include "Ano_OPMV_CBTracking_Ctrl.h"
 #include "Drv_Uart.h"
-
+#include "Ano_MotionCal.h"
+#include "Ano_FlightDataCal.h"
 
 
 
@@ -86,7 +87,8 @@ static void Loop_Task_0(void)//1ms执行一次
 	
 
 	/*数传数据交换*/
-	ANO_DT_Data_Exchange();	
+	// ANO_DT_Data_Exchange();
+    Fly_FixHeight();	
 }
 
 static void Loop_Task_1(void)	//2ms执行一次
@@ -167,7 +169,7 @@ static void Loop_Task_8(void)	//20ms执行一次
 	/*程序指令控制*/
 	FlyCtrl_Task(20);
 	/*--*/
-	Ano_UWB_Data_Calcu_Task(20);
+	// Ano_UWB_Data_Calcu_Task(20);
 	/*位置速度环控制*/
 	Loc_1level_Ctrl(20,CH_N);
 //	/*OPMV检测是否掉线*/
@@ -187,21 +189,68 @@ static void Loop_Task_9(void)	//50ms执行一次
 	//恒温控制（不能直接注释掉，否则开机过不了校准）
 	Thermostatic_Ctrl_Task(50);
 	//	/*延时存储任务*/
-	Ano_Parame_Write_task(50);
-	
-	
+	Ano_Parame_Write_task(50);	
+}
+
+extern u16 my_jig;
+extern s32 baro_height,baro_h_offset,ref_height_get_1,ref_height_get_2,ref_height_used;
+
+static void Loop_Task_10(void)	//100ms执行一次
+{
 	u8 _cnt = 0;
-	
-	u16 t_pit = (u16)(imu_data.pit*100);
-	u16 t_rol = (u16)(imu_data.rol*100);
-	u16 t_yaw = (u16)(imu_data.yaw*100);
-	
-	my_data_to_send[_cnt++]=0xaa;
+	u16 t_pit = (u16)(imu_data.pit*100+18000);
+	u16 t_rol = (u16)(imu_data.rol*100+18000);
+	u16 t_yaw = (u16)(imu_data.yaw*100+18000);
 	my_data_to_send[_cnt++]=0xaa;
 	my_data_to_send[_cnt++]=t_pit/256;
 	my_data_to_send[_cnt++]=t_pit%256;
-	my_data_to_send[_cnt++]=0x00;
-	my_data_to_send[_cnt++]=0x00;
+	my_data_to_send[_cnt++]=t_rol/256;
+	my_data_to_send[_cnt++]=t_rol%256;
+	my_data_to_send[_cnt++]=t_yaw/256;
+	my_data_to_send[_cnt++]=t_yaw%256;
+	my_data_to_send[_cnt++]=CH_N[CH_ROL]/256;
+	my_data_to_send[_cnt++]=CH_N[CH_ROL]%256;
+	my_data_to_send[_cnt++]=CH_N[CH_PIT]/256;
+	my_data_to_send[_cnt++]=CH_N[CH_PIT]%256;
+	my_data_to_send[_cnt++]=CH_N[CH_THR]/256;
+	my_data_to_send[_cnt++]=CH_N[CH_THR]%256;
+	my_data_to_send[_cnt++]=CH_N[CH_YAW]/256;
+	my_data_to_send[_cnt++]=CH_N[CH_YAW]%256;
+	my_data_to_send[_cnt++]=opmv.cb.pos_x/256;
+	my_data_to_send[_cnt++]=opmv.cb.pos_x%256;
+	my_data_to_send[_cnt++]=opmv.cb.pos_y/256;
+	my_data_to_send[_cnt++]=opmv.cb.pos_y%256;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[0]*100)/256;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[0]*100)%256;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[1]*100)/256;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[1]*100)%256;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[X]*100)/256;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[X]*100)%256;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[Y]*100)/256;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[Y]*100)%256;
+	my_data_to_send[_cnt++]=(int)(motor[0])/256;
+	my_data_to_send[_cnt++]=(int)(motor[0])%256;
+	my_data_to_send[_cnt++]=(int)(motor[1])/256;
+	my_data_to_send[_cnt++]=(int)(motor[1])%256;
+	my_data_to_send[_cnt++]=(int)(motor[2])/256;
+	my_data_to_send[_cnt++]=(int)(motor[2])%256;
+	my_data_to_send[_cnt++]=(int)(motor[3])/256;
+	my_data_to_send[_cnt++]=(int)(motor[3])%256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_thr)/256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_thr)%256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_yaw)/256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_yaw)%256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_rol)/256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_rol)%256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)/256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)%256;
+	my_data_to_send[_cnt++]=(int)(my_jig)/256;
+	my_data_to_send[_cnt++]=(int)(my_jig)%256;
+	u16 res = ref_height_used;
+	my_data_to_send[_cnt++]=(int)(res)/256;
+	my_data_to_send[_cnt++]=(int)(res)%256;
+	my_data_to_send[_cnt++]=wcz_hei_fus.out;
+	my_data_to_send[_cnt++]=0xfe;
 	
 	Drv_Uart5SendBuf(my_data_to_send, _cnt);
 }
@@ -227,7 +276,7 @@ static sched_task_t sched_tasks[] =
 //	{Loop_Task_7 ,  9090,  0 },
 	{Loop_Task_8 , 20000,  0 },
 	{Loop_Task_9 , 50000,  0 },
-//	{Loop_Task_10,100000,  0 },
+	{Loop_Task_10,100000,  0 },
 };
 
 //根据数组长度，判断线程数量

@@ -183,10 +183,12 @@ static void ANO_CBTracking_Calcu(u8 *dT_ms,s32 relative_height_cm)
 *参    数: 周期时间(ms)
 *返 回 值: 无
 **********************************************************************************************************/
+extern s32 baro_height,baro_h_offset,ref_height_get_1,ref_height_get_2,ref_height_used;
+
 void ANO_CBTracking_Ctrl_Task(u8 dT_ms)
 {
 	//开启控制的条件，可以自己修改
-	if(switchs.of_flow_on && switchs.opmv_on)
+	if(switchs.opmv_on && ref_height_used > 50)
 	{
 		//距离偏差PD控制和速度前馈
 		ano_opmv_cbt_ctrl.exp_velocity_h_cmps[0]\

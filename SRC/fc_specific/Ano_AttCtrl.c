@@ -186,7 +186,8 @@ void Att_2level_Ctrl(float dT_s,s16 *CH_N)
 	//
 	fc_stv.yaw_pal_limit = max_yaw_speed;
 	/*摇杆量转换为YAW期望角速度 + 程控期望角速度*/
-	set_yaw_av_tmp = (s32)(0.0023f *my_deadzone(CH_N[CH_YAW],0,65) *max_yaw_speed) + (-program_ctrl.yaw_pal_dps) + pc_user.pal_dps_set;
+	//set_yaw_av_tmp = (s32)(0.0023f *my_deadzone(CH_N[CH_YAW],0,65) *max_yaw_speed) + (-program_ctrl.yaw_pal_dps) + pc_user.pal_dps_set;
+	set_yaw_av_tmp = (-program_ctrl.yaw_pal_dps) + pc_user.pal_dps_set;
 
 	/*最大YAW角速度限幅*/
 	set_yaw_av_tmp = LIMIT(set_yaw_av_tmp ,-max_yaw_speed,max_yaw_speed);

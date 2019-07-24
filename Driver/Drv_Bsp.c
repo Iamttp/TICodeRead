@@ -95,9 +95,9 @@ void Drv_BspInit(void)
 	SysTick_Init();	
 	//串口初始化
 	Drv_Uart5Init(115200);	// 自定义数传
-	Drv_Uart4Init(500000);	//接光流
-	// Drv_Uart2Init(500000);	//接数传
-	Drv_Uart3Init(500000);  //接OPMV
+	Drv_Uart4Init(115200);	// 接激光
+	Drv_Uart2Init(500000);	// 接数传
+	Drv_Uart3Init(500000);  // 接OPMV
 	Drv_GpsPin_Init();//
 	
 	//====fc

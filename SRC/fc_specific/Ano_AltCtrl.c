@@ -40,26 +40,26 @@ void Auto_Take_Off_Land_Task(u8 dT_ms)//
 	
 	if(flag.auto_take_off_land ==AUTO_TAKE_OFF)
 	{
-		//ÉèÖÃ×î´óÆð·ÉËÙ¶È
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
 		s16 max_take_off_vel = LIMIT(Ano_Parame.set.auto_take_off_speed,20,200);
 		//
 		take_off_ok_cnt += dT_ms;
 		auto_taking_off_speed = AUTO_TAKE_OFF_KP *(Ano_Parame.set.auto_take_off_height - wcz_hei_fus.out);
-		//¼ÆËãÆð·ÉËÙ¶È
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
 		auto_taking_off_speed = LIMIT(auto_taking_off_speed,0,max_take_off_vel);
 		
-		//ÍË³öÆð·ÉÁ÷³ÌÌõ¼þ1£¬Âú×ã¸ß¶È»òÕßÁ÷³ÌÊ±¼ä´óÓÚ5000ºÁÃë¡£
-		if(take_off_ok_cnt>=5000 || (Ano_Parame.set.auto_take_off_height - loc_ctrl_2.exp[Z] <2))//(auto_ref_height>AUTO_TAKE_OFF_HEIGHT)
+		//ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¶È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½5000ï¿½ï¿½ï¿½ë¡£
+		if(take_off_ok_cnt>=5000 || (Ano_Parame.set.auto_take_off_height - loc_ctrl_2.exp[Z] <10))//(auto_ref_height>AUTO_TAKE_OFF_HEIGHT)
 		{
 			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
 			
 			
 		}
-		//ÍË³öÆð·ÉÁ÷³ÌÌõ¼þ2£¬2000ºÁÃëºóÅÐ¶ÏÓÃ»§ÕýÔÚ¿ØÖÆÓÍÃÅ¡£
-		if(take_off_ok_cnt >2000 && ABS(fs.speed_set_h_norm[Z])>0.1f)// Ò»¶¨ÒÑ¾­taking_off,Èç¹û»¹ÔÚÍÆ¸Ë£¬ÍË³öÆð·ÉÁ÷³Ì
-		{
-			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
-		}
+		//ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½2000ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¡ï¿½
+//		if(take_off_ok_cnt >2000 && ABS(fs.speed_set_h_norm[Z])>0.1f)// Ò»ï¿½ï¿½ï¿½Ñ¾ï¿½taking_off,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¸Ë£ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//		{
+//			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
+//		}
 	
 	}
 	else 
@@ -79,7 +79,7 @@ void Auto_Take_Off_Land_Task(u8 dT_ms)//
 	
 	if(flag.auto_take_off_land == AUTO_LAND)
 	{
-		//ÉèÖÃ×Ô¶¯ÏÂ½µËÙ¶È
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½Â½ï¿½ï¿½Ù¶ï¿½
 		auto_taking_off_speed = -(s16)LIMIT(Ano_Parame.set.auto_landing_speed,20,200);
 
 	}
@@ -89,7 +89,7 @@ void Auto_Take_Off_Land_Task(u8 dT_ms)//
 _PID_arg_st alt_arg_2;
 _PID_val_st alt_val_2;
 
-/*¸ß¶È»·PID²ÎÊý³õÊ¼»¯*/
+/*ï¿½ß¶È»ï¿½PIDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½*/
 void Alt_2level_PID_Init()
 {
 	alt_arg_2.kp = Ano_Parame.set.pid_alt_2level[KP];
@@ -129,14 +129,14 @@ void Alt_2level_Ctrl(float dT_s)
 	if(flag.taking_off == 1)
 	{
 
-		PID_calculate( dT_s,            //ÖÜÆÚ£¨µ¥Î»£ºÃë£©
-						0,				//Ç°À¡Öµ
-						loc_ctrl_2.exp[Z],				//ÆÚÍûÖµ£¨Éè¶¨Öµ£©
-						loc_ctrl_2.fb[Z],			//·´À¡Öµ£¨£©
-						&alt_arg_2, //PID²ÎÊý½á¹¹Ìå
-						&alt_val_2,	//PIDÊý¾Ý½á¹¹Ìå
-						100,//»ý·ÖÎó²îÏÞ·ù
-						0			//integration limit£¬»ý·ÖÏÞ·ù									
+		PID_calculate( dT_s,            //ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ë£©
+						0,				//Ç°ï¿½ï¿½Öµ
+						loc_ctrl_2.exp[Z],				//ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½è¶¨Öµï¿½ï¿½
+						loc_ctrl_2.fb[Z],			//ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
+						&alt_arg_2, //PIDï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½
+						&alt_val_2,	//PIDï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½
+						100,//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½
+						0			//integration limitï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½									
 						 );
 
 	}
@@ -155,7 +155,7 @@ void Alt_2level_Ctrl(float dT_s)
 _PID_arg_st alt_arg_1;
 _PID_val_st alt_val_1;
 
-/*¸ß¶ÈËÙ¶È»·PID²ÎÊý³õÊ¼»¯*/
+/*ï¿½ß¶ï¿½ï¿½Ù¶È»ï¿½PIDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½*/
 void Alt_1level_PID_Init()
 {
 	alt_arg_1.kp = Ano_Parame.set.pid_alt_1level[KP];
@@ -176,21 +176,21 @@ void Alt_1level_Ctrl(float dT_s)
 	
 	flag.thr_mode = THR_AUTO;//THR_MANUAL;
 	
-	loc_ctrl_1.exp[Z] = 0.6f *fs.alt_ctrl_speed_set + alt_val_2.out;//ËÙ¶ÈÇ°À¡0.6f£¬Ö±½Ó¸øËÙ¶È
+	loc_ctrl_1.exp[Z] = 0.6f *fs.alt_ctrl_speed_set + alt_val_2.out;//ï¿½Ù¶ï¿½Ç°ï¿½ï¿½0.6fï¿½ï¿½Ö±ï¿½Ó¸ï¿½ï¿½Ù¶ï¿½
 	
-	w_acc_z_lpf += 0.1f *(imu_data.w_acc[Z] - w_acc_z_lpf); //µÍÍ¨ÂË²¨
+	w_acc_z_lpf += 0.1f *(imu_data.w_acc[Z] - w_acc_z_lpf); //ï¿½ï¿½Í¨ï¿½Ë²ï¿½
 
-	loc_ctrl_1.fb[Z] = wcz_spe_fus.out + Ano_Parame.set.pid_alt_1level[KD] *w_acc_z_lpf;//Î¢·ÖÏÈÐÐ£¬ÏÂ±ßPIDº¯ÊýÎ¢·ÖÏµÊýÎª0
+	loc_ctrl_1.fb[Z] = wcz_spe_fus.out + Ano_Parame.set.pid_alt_1level[KD] *w_acc_z_lpf;//Î¢ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½Â±ï¿½PIDï¿½ï¿½ï¿½ï¿½Î¢ï¿½ï¿½Ïµï¿½ï¿½Îª0
 	
 	
-	PID_calculate( dT_s,            //ÖÜÆÚ£¨µ¥Î»£ºÃë£©
-					0,				//Ç°À¡Öµ
-					loc_ctrl_1.exp[Z],				//ÆÚÍûÖµ£¨Éè¶¨Öµ£©
-					loc_ctrl_1.fb[Z] ,			//·´À¡Öµ£¨£©
-					&alt_arg_1, //PID²ÎÊý½á¹¹Ìå
-					&alt_val_1,	//PIDÊý¾Ý½á¹¹Ìå
-					100,//»ý·ÖÎó²îÏÞ·ù
-					(THR_INTE_LIM *10 - err_i_comp )*out_en			//integration limit£¬»ý·ÖÏÞ·ù									
+	PID_calculate( dT_s,            //ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ë£©
+					0,				//Ç°ï¿½ï¿½Öµ
+					loc_ctrl_1.exp[Z],				//ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½è¶¨Öµï¿½ï¿½
+					loc_ctrl_1.fb[Z] ,			//ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
+					&alt_arg_1, //PIDï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½
+					&alt_val_1,	//PIDï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½
+					100,//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½
+					(THR_INTE_LIM *10 - err_i_comp )*out_en			//integration limitï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½									
 					 );
 	
 	if(flag.taking_off == 1)

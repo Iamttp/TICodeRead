@@ -133,3 +133,177 @@ Ano_RC.c 取消了注释
 ```cpp
 		CH_N[1]=-CH_N[1];//@徐，遥控器俯仰通道反了，所以加个负号
 ```
+
+### 核心功能添加记录
+
+* 1.0 数传功能
+
+在Ano_Scheduler.c里面添加100ms执行函数发送数据，需要初始化串口Drv_Uart5。
+
+```c
+static void Loop_Task_10(void)	//100ms执行一次
+{
+	u8 _cnt = 0;
+	u16 t_pit = (u16)(imu_data.pit*100+18000);
+	u16 t_rol = (u16)(imu_data.rol*100+18000);
+	u16 t_yaw = (u16)(imu_data.yaw*100+18000);
+	my_data_to_send[_cnt++]=0xaa;
+	my_data_to_send[_cnt++]=t_pit/256;
+	my_data_to_send[_cnt++]=t_pit%256;
+	my_data_to_send[_cnt++]=t_rol/256;
+	my_data_to_send[_cnt++]=t_rol%256;
+	my_data_to_send[_cnt++]=t_yaw/256;
+	my_data_to_send[_cnt++]=t_yaw%256;
+	my_data_to_send[_cnt++]=CH_N[CH_ROL]/256;
+	my_data_to_send[_cnt++]=CH_N[CH_ROL]%256;
+	my_data_to_send[_cnt++]=CH_N[CH_PIT]/256;
+	my_data_to_send[_cnt++]=CH_N[CH_PIT]%256;
+	my_data_to_send[_cnt++]=CH_N[CH_THR]/256;
+	my_data_to_send[_cnt++]=CH_N[CH_THR]%256;
+	my_data_to_send[_cnt++]=CH_N[CH_YAW]/256;
+	my_data_to_send[_cnt++]=CH_N[CH_YAW]%256;
+	my_data_to_send[_cnt++]=opmv.cb.pos_x/256;
+	my_data_to_send[_cnt++]=opmv.cb.pos_x%256;
+	my_data_to_send[_cnt++]=opmv.cb.pos_y/256;
+	my_data_to_send[_cnt++]=opmv.cb.pos_y%256;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[0]*100)/256;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[0]*100)%256;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[1]*100)/256;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[1]*100)%256;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[X]*100)/256;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[X]*100)%256;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[Y]*100)/256;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[Y]*100)%256;
+	my_data_to_send[_cnt++]=(int)(motor[0])/256;
+	my_data_to_send[_cnt++]=(int)(motor[0])%256;
+	my_data_to_send[_cnt++]=(int)(motor[1])/256;
+	my_data_to_send[_cnt++]=(int)(motor[1])%256;
+	my_data_to_send[_cnt++]=(int)(motor[2])/256;
+	my_data_to_send[_cnt++]=(int)(motor[2])%256;
+	my_data_to_send[_cnt++]=(int)(motor[3])/256;
+	my_data_to_send[_cnt++]=(int)(motor[3])%256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_thr)/256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_thr)%256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_yaw)/256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_yaw)%256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_rol)/256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_rol)%256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)/256;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)%256;
+	my_data_to_send[_cnt++]=(int)(my_jig)/256;
+	my_data_to_send[_cnt++]=(int)(my_jig)%256;
+	u16 res = ref_height_used;
+	my_data_to_send[_cnt++]=(int)(res)/256;
+	my_data_to_send[_cnt++]=(int)(res)%256;
+	my_data_to_send[_cnt++]=wcz_hei_fus.out;
+	my_data_to_send[_cnt++]=0xfe;
+	
+	Drv_Uart5SendBuf(my_data_to_send, _cnt);
+
+}
+```
+
+* 2.0 一键起飞降落
+
+在Ano_FlightCtrl.c里面添加一键起飞降落程序，在1ms程序里面调用。
+
+注意注释掉Ano_FlightCtrl.c里面的设置flag.taking_off = 1;的代码。
+
+```c
+static u8 FixHeight_flag=0;
+void Fly_FixHeight()
+{
+	// 一键降落
+	if(CH_N[7]<200&&FixHeight_flag==0)
+	{
+		one_key_land();
+	//	flag.unlock_cmd = 0;
+		Ano_Parame.set.auto_take_off_height=0;
+		FixHeight_flag=1;
+	}
+	// 解锁
+	if(CH_N[7]>400&&FixHeight_flag==1)
+	{
+		Ano_Parame.set.auto_take_off_height=160;
+		Ano_Parame.set.auto_take_off_speed=200;
+
+		one_key_take_off();
+		FixHeight_flag=0;
+	}
+	// 急停
+	if(CH_N[4]>400)
+	{
+		flag.unlock_cmd = 0;
+	}
+	// 解锁后起飞
+	if(CH_N[5]>400&&FixHeight_flag==0)
+	{
+		flag.taking_off = 1;
+	}
+//	else if(CH_N[5]<200)
+//	{
+//		flag.unlock_cmd = 1;
+//	}
+}
+```
+
+* 3.0 启用openmv判断程序
+
+Ano_OPMV_CBTracking_Ctrl.c里面取消对光流的要求
+```c
+////////////////////////////////////////////////////old
+	if(switchs.of_flow_on && switchs.opmv_on)
+////////////////////////////////////////////////////new
+	if(switchs.opmv_on)
+///////////////////////////////////////////////////2019/7/24 new 添加对高度的要求
+	if(switchs.opmv_on && ref_height_used > 50)
+
+```
+
+Ano_FlightCtrl.c里面取消对LOC_HOLD模式的要求
+```c
+///////////////////////////////////////////////////old
+	if(opmv.offline==0 && flag.flight_mode == LOC_HOLD)
+///////////////////////////////////////////////////new
+	if(opmv.offline==0)
+```
+
+* 4.0 添加激光测距，将原本光流的串口用于接受激光模块，气压计高度数据直接被激光数据替换
+
+```c
+	Drv_Uart5Init(115200);	// 自定义数传
+	Drv_Uart4Init(115200);	// 接激光
+	Drv_Uart2Init(500000);	// 接数传，未用
+	Drv_Uart3Init(500000);  // 接OPMV
+```
+
+Drv_Uart.c里面直接替换UART4_IRQHandler(void)的数据
+```c
+	// AnoOF_GetOneByte(com_data);
+	
+	if(com_data==0x5a && my_flag == 0)
+		my_flag = 1;
+	else if(com_data==0x5a && my_flag == 1)
+		my_flag = 2;
+	else if(com_data==0x15 && my_flag == 2)
+		my_flag = 3;
+	else if(com_data==0x03 && my_flag == 3)
+		my_flag = 4;
+	else if(my_flag == 4)
+	{
+		my_jig = (com_data << 8);
+		my_flag++;
+	}
+	else if(my_flag == 5)
+	{
+		my_jig |= (com_data);
+		my_flag = 0;
+	}		
+	else
+		my_flag = 0;
+```
+
+Ano_FlightDataCal.c里面直接设置高度数据
+```c
+	ref_height_used = my_jig/10.0;
+```
