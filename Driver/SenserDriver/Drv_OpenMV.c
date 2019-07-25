@@ -113,18 +113,43 @@ void OpenMV_Byte_Get(u8 bytedata)
 *参    数: 缓存数据（形参），长度
 *返 回 值: 无
 **********************************************************************************************************/
+extern s32 baro_height,baro_h_offset,ref_height_get_1,ref_height_get_2,ref_height_used;
+s16 angle_right = 0;
 static void OpenMV_Data_Analysis(u8 *buf_data,u8 len)
 {
+	static int i = 0;
 	if(*(buf_data+3)==0x41)
 	{
+		i++;
+		if(i%10 == 0)
+		{
+			opmv.lt.angle = 0;
+			angle_right = 0;
+			Program_Ctrl_User_Set_YAWdps(0);	
+			Program_Ctrl_User_Set_HXYcmps(0,0);
+		}
 		opmv.cb.color_flag = *(buf_data+5);
 		opmv.cb.sta = *(buf_data+6);
 		opmv.cb.pos_x = (s16)((*(buf_data+7)<<8)|*(buf_data+8));
 		opmv.cb.pos_y = (s16)((*(buf_data+9)<<8)|*(buf_data+10));
 	}
-	else if(*(buf_data+3)==0x42)
+	if(*(buf_data+3)==0x42)
 	{
-
+		i = 0;
+		angle_right = (s16)((*(buf_data+9)<<8)|*(buf_data+10));
+		if(opmv.lt.angle!=0 && angle_right != 0 && ref_height_used > 90 && angle_right - opmv.lt.angle < 35)
+		{
+			if(angle_right*0.5 + 0.5*opmv.lt.angle>90)
+				Program_Ctrl_User_Set_YAWdps((angle_right*0.8 + 0.2*opmv.lt.angle-180)*1);		
+			else
+				Program_Ctrl_User_Set_YAWdps((angle_right*0.8 + 0.2*opmv.lt.angle)*1);
+			// TODO 
+			if(angle_right - opmv.lt.angle > 40)
+				Program_Ctrl_User_Set_HXYcmps(0,0);
+			else
+				Program_Ctrl_User_Set_HXYcmps(10,0);
+		}
+		opmv.lt.angle = angle_right;
 	}
 	//
 	OpenMV_Check_Reset();

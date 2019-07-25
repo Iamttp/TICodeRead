@@ -249,6 +249,7 @@ static void Loop_Task_10(void)	//100ms执行一次
 	u16 res = ref_height_used;
 	my_data_to_send[_cnt++]=(int)(res)/256;
 	my_data_to_send[_cnt++]=(int)(res)%256;
+	my_data_to_send[_cnt++]=opmv.lt.angle;
 	my_data_to_send[_cnt++]=wcz_hei_fus.out;
 	my_data_to_send[_cnt++]=0xfe;
 	
