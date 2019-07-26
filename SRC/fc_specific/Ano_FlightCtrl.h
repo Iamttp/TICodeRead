@@ -73,5 +73,7 @@ void Flight_State_Task(u8,s16 *CH_N);
 void Flight_Mode_Set(u8 dT_ms);
 
 void Swtich_State_Task(u8 dT_ms);
+
+void Fly_FixHeight(void);
 #endif
 

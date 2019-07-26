@@ -1,6 +1,6 @@
 //默认引用：
 #include "Drv_OpenMV.h"
-
+#include "Ano_Math.h"
 //设定
 #define OPMV_OFFLINE_TIME_MS  1000  //毫秒
 
@@ -115,6 +115,15 @@ void OpenMV_Byte_Get(u8 bytedata)
 **********************************************************************************************************/
 extern s32 baro_height,baro_h_offset,ref_height_get_1,ref_height_get_2,ref_height_used;
 s16 angle_right = 0;
+extern float my_speed, speed_set_tmp[2];
+static s16 get_real(s16 angle)
+{
+	if(angle > 90)
+		return angle - 180;
+	else
+		return angle;
+}
+
 static void OpenMV_Data_Analysis(u8 *buf_data,u8 len)
 {
 	static int i = 0;
@@ -126,7 +135,7 @@ static void OpenMV_Data_Analysis(u8 *buf_data,u8 len)
 			opmv.lt.angle = 0;
 			angle_right = 0;
 			Program_Ctrl_User_Set_YAWdps(0);	
-			Program_Ctrl_User_Set_HXYcmps(0,0);
+			// Program_Ctrl_User_Set_HXYcmps(0,0);
 		}
 		opmv.cb.color_flag = *(buf_data+5);
 		opmv.cb.sta = *(buf_data+6);
@@ -137,19 +146,29 @@ static void OpenMV_Data_Analysis(u8 *buf_data,u8 len)
 	{
 		i = 0;
 		angle_right = (s16)((*(buf_data+9)<<8)|*(buf_data+10));
-		if(opmv.lt.angle!=0 && angle_right != 0 && ref_height_used > 90 && angle_right - opmv.lt.angle < 35)
-		{
-			if(angle_right*0.5 + 0.5*opmv.lt.angle>90)
-				Program_Ctrl_User_Set_YAWdps((angle_right*0.8 + 0.2*opmv.lt.angle-180)*1);		
-			else
-				Program_Ctrl_User_Set_YAWdps((angle_right*0.8 + 0.2*opmv.lt.angle)*1);
+		if(ref_height_used > 90)
+		{				
+			if(opmv.lt.angle!=0 && angle_right != 0 && ABS(get_real(angle_right) - get_real(opmv.lt.angle)) < 35)
+			{
+					Program_Ctrl_User_Set_YAWdps(get_real(angle_right*0.8 + 0.2*opmv.lt.angle)*1.2 \
+																		+ (get_real(angle_right) - get_real(opmv.lt.angle))*0.12);	
+			}
 			// TODO 
-			if(angle_right - opmv.lt.angle > 40)
-				Program_Ctrl_User_Set_HXYcmps(0,0);
+//			if(angle_right - opmv.lt.angle > 40)
+//				my_speed = -50;
+//			else
+//				my_speed = 50;
+			if(ABS(get_real(angle_right)) > 10)
+			{
+				my_speed = 0;
+				speed_set_tmp[X] = 0;
+			}
 			else
-				Program_Ctrl_User_Set_HXYcmps(10,0);
+			{
+				my_speed = 20;
+			}
+			opmv.lt.angle = angle_right;
 		}
-		opmv.lt.angle = angle_right;
 	}
 	//
 	OpenMV_Check_Reset();

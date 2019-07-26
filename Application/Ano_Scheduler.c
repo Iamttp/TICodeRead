@@ -88,7 +88,6 @@ static void Loop_Task_0(void)//1ms执行一次
 
 	/*数传数据交换*/
 	// ANO_DT_Data_Exchange();
-    Fly_FixHeight();	
 }
 
 static void Loop_Task_1(void)	//2ms执行一次
@@ -194,7 +193,7 @@ static void Loop_Task_9(void)	//50ms执行一次
 
 extern u16 my_jig;
 extern s32 baro_height,baro_h_offset,ref_height_get_1,ref_height_get_2,ref_height_used;
-
+extern float max_speed_lim,vel_z_tmp[2];
 static void Loop_Task_10(void)	//100ms执行一次
 {
 	u8 _cnt = 0;
@@ -244,8 +243,8 @@ static void Loop_Task_10(void)	//100ms执行一次
 	my_data_to_send[_cnt++]=(int)(mc.ct_val_rol)%256;
 	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)/256;
 	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)%256;
-	my_data_to_send[_cnt++]=(int)(my_jig)/256;
-	my_data_to_send[_cnt++]=(int)(my_jig)%256;
+	my_data_to_send[_cnt++]=(int)(vel_z_tmp[0]*100)/256;
+	my_data_to_send[_cnt++]=(int)(vel_z_tmp[0]*100)%256;
 	u16 res = ref_height_used;
 	my_data_to_send[_cnt++]=(int)(res)/256;
 	my_data_to_send[_cnt++]=(int)(res)%256;
