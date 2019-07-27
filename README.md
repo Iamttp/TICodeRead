@@ -134,13 +134,21 @@ Ano_RC.c 取消了注释
 		CH_N[1]=-CH_N[1];//@徐，遥控器俯仰通道反了，所以加个负号
 ```
 
-### 核心功能添加记录
+# 核心功能添加记录
 
 * 1.0 数传功能
 
 在Ano_Scheduler.c里面添加100ms执行函数发送数据，需要初始化串口Drv_Uart5。
 
+打开100ms定时执行任务。
 ```c
+	{Loop_Task_10,100000,  0 },
+```
+
+```c
+extern u16 my_jig;
+extern s32 baro_height,baro_h_offset,ref_height_get_1,ref_height_get_2,ref_height_used;
+extern float max_speed_lim,vel_z_tmp[2];
 static void Loop_Task_10(void)	//100ms执行一次
 {
 	u8 _cnt = 0;
@@ -148,58 +156,58 @@ static void Loop_Task_10(void)	//100ms执行一次
 	u16 t_rol = (u16)(imu_data.rol*100+18000);
 	u16 t_yaw = (u16)(imu_data.yaw*100+18000);
 	my_data_to_send[_cnt++]=0xaa;
-	my_data_to_send[_cnt++]=t_pit/256;
-	my_data_to_send[_cnt++]=t_pit%256;
-	my_data_to_send[_cnt++]=t_rol/256;
-	my_data_to_send[_cnt++]=t_rol%256;
-	my_data_to_send[_cnt++]=t_yaw/256;
-	my_data_to_send[_cnt++]=t_yaw%256;
-	my_data_to_send[_cnt++]=CH_N[CH_ROL]/256;
-	my_data_to_send[_cnt++]=CH_N[CH_ROL]%256;
-	my_data_to_send[_cnt++]=CH_N[CH_PIT]/256;
-	my_data_to_send[_cnt++]=CH_N[CH_PIT]%256;
-	my_data_to_send[_cnt++]=CH_N[CH_THR]/256;
-	my_data_to_send[_cnt++]=CH_N[CH_THR]%256;
-	my_data_to_send[_cnt++]=CH_N[CH_YAW]/256;
-	my_data_to_send[_cnt++]=CH_N[CH_YAW]%256;
-	my_data_to_send[_cnt++]=opmv.cb.pos_x/256;
-	my_data_to_send[_cnt++]=opmv.cb.pos_x%256;
-	my_data_to_send[_cnt++]=opmv.cb.pos_y/256;
-	my_data_to_send[_cnt++]=opmv.cb.pos_y%256;
-	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[0]*100)/256;
-	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[0]*100)%256;
-	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[1]*100)/256;
-	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[1]*100)%256;
-	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[X]*100)/256;
-	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[X]*100)%256;
-	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[Y]*100)/256;
-	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[Y]*100)%256;
-	my_data_to_send[_cnt++]=(int)(motor[0])/256;
-	my_data_to_send[_cnt++]=(int)(motor[0])%256;
-	my_data_to_send[_cnt++]=(int)(motor[1])/256;
-	my_data_to_send[_cnt++]=(int)(motor[1])%256;
-	my_data_to_send[_cnt++]=(int)(motor[2])/256;
-	my_data_to_send[_cnt++]=(int)(motor[2])%256;
-	my_data_to_send[_cnt++]=(int)(motor[3])/256;
-	my_data_to_send[_cnt++]=(int)(motor[3])%256;
-	my_data_to_send[_cnt++]=(int)(mc.ct_val_thr)/256;
-	my_data_to_send[_cnt++]=(int)(mc.ct_val_thr)%256;
-	my_data_to_send[_cnt++]=(int)(mc.ct_val_yaw)/256;
-	my_data_to_send[_cnt++]=(int)(mc.ct_val_yaw)%256;
-	my_data_to_send[_cnt++]=(int)(mc.ct_val_rol)/256;
-	my_data_to_send[_cnt++]=(int)(mc.ct_val_rol)%256;
-	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)/256;
-	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)%256;
-	my_data_to_send[_cnt++]=(int)(my_jig)/256;
-	my_data_to_send[_cnt++]=(int)(my_jig)%256;
+	my_data_to_send[_cnt++]=t_pit>>8;
+	my_data_to_send[_cnt++]=t_pit& 0x00FF;
+	my_data_to_send[_cnt++]=t_rol>>8;
+	my_data_to_send[_cnt++]=t_rol& 0x00FF;
+	my_data_to_send[_cnt++]=t_yaw>>8;
+	my_data_to_send[_cnt++]=t_yaw& 0x00FF;
+	my_data_to_send[_cnt++]=CH_N[CH_ROL]>>8;
+	my_data_to_send[_cnt++]=CH_N[CH_ROL]& 0x00FF;
+	my_data_to_send[_cnt++]=CH_N[CH_PIT]>>8;
+	my_data_to_send[_cnt++]=CH_N[CH_PIT]& 0x00FF;
+	my_data_to_send[_cnt++]=CH_N[CH_THR]>>8;
+	my_data_to_send[_cnt++]=CH_N[CH_THR]& 0x00FF;
+	my_data_to_send[_cnt++]=CH_N[CH_YAW]>>8;
+	my_data_to_send[_cnt++]=CH_N[CH_YAW]& 0x00FF;
+	my_data_to_send[_cnt++]=opmv.cb.pos_x>>8;
+	my_data_to_send[_cnt++]=opmv.cb.pos_x& 0x00FF;
+	my_data_to_send[_cnt++]=opmv.cb.pos_y>>8;
+	my_data_to_send[_cnt++]=opmv.cb.pos_y& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[0]*100)>>8;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[0]*100)& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[1]*100)>>8;
+	my_data_to_send[_cnt++]=(int)(ano_opmv_cbt_ctrl.ground_pos_err_h_cm[1]*100)& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[X]*100)>>8;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[X]*100)& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[Y]*100)>>8;
+	my_data_to_send[_cnt++]=(int)(fs.speed_set_h[Y]*100)& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(motor[0])>>8;
+	my_data_to_send[_cnt++]=(int)(motor[0])& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(motor[1])>>8;
+	my_data_to_send[_cnt++]=(int)(motor[1])& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(motor[2])>>8;
+	my_data_to_send[_cnt++]=(int)(motor[2])& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(motor[3])>>8;
+	my_data_to_send[_cnt++]=(int)(motor[3])& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_thr)>>8;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_thr)& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_yaw)>>8;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_yaw)& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_rol)>>8;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_rol)& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)>>8;
+	my_data_to_send[_cnt++]=(int)(mc.ct_val_pit)& 0x00FF;
+	my_data_to_send[_cnt++]=(int)(vel_z_tmp[0]*100)>>8;
+	my_data_to_send[_cnt++]=(int)(vel_z_tmp[0]*100)& 0x00FF;
 	u16 res = ref_height_used;
-	my_data_to_send[_cnt++]=(int)(res)/256;
-	my_data_to_send[_cnt++]=(int)(res)%256;
+	my_data_to_send[_cnt++]=(int)(res)>>8;
+	my_data_to_send[_cnt++]=(int)(res)& 0x00FF;
+	my_data_to_send[_cnt++]=opmv.lt.angle;
 	my_data_to_send[_cnt++]=wcz_hei_fus.out;
 	my_data_to_send[_cnt++]=0xfe;
 	
 	Drv_Uart5SendBuf(my_data_to_send, _cnt);
-
 }
 ```
 
@@ -210,40 +218,50 @@ static void Loop_Task_10(void)	//100ms执行一次
 注意注释掉Ano_FlightCtrl.c里面的设置flag.taking_off = 1;的代码。
 
 ```c
-static u8 FixHeight_flag=0;
+#define exp_high 110
+extern s32 ref_height_used;
+float last_exp=0.0, new_exp=0.0;
 void Fly_FixHeight()
 {
-	// 一键降落
-	if(CH_N[7]<200&&FixHeight_flag==0)
+	// 降落
+	if(CH_N[7]<200)
 	{
 		one_key_land();
-	//	flag.unlock_cmd = 0;
 		Ano_Parame.set.auto_take_off_height=0;
-		FixHeight_flag=1;
 	}
-	// 解锁
-	if(CH_N[7]>400&&FixHeight_flag==1)
-	{
-		Ano_Parame.set.auto_take_off_height=160;
-		Ano_Parame.set.auto_take_off_speed=200;
 
-		one_key_take_off();
-		FixHeight_flag=0;
+	// 起飞
+	if(CH_N[7]>400)
+	{
+		if(flag.motor_preparation == 1) // 0-1
+		{
+			flag.taking_off = 1;
+		}	
+		new_exp=(exp_high-ref_height_used);
+		/*设置上升速度*/
+		// 刚开始用较大PID起飞
+		if(ABS(new_exp) > 8)
+			vel_z_tmp[0] = 2*new_exp+0.2*(new_exp-last_exp);
+		else
+			vel_z_tmp[0] = 0.02*new_exp+0.002*(new_exp-last_exp);
+		if(ABS(vel_z_tmp[0]) < 1){
+			vel_z_tmp[0] = 0;
+		}
+		last_exp=new_exp;
 	}
-	// 急停
+
+	// 解锁
 	if(CH_N[4]>400)
+	{
+		flag.unlock_cmd = 1;
+	}
+	
+	// 急停
+	if(CH_N[4]<200)
 	{
 		flag.unlock_cmd = 0;
 	}
-	// 解锁后起飞
-	if(CH_N[5]>400&&FixHeight_flag==0)
-	{
-		flag.taking_off = 1;
-	}
-//	else if(CH_N[5]<200)
-//	{
-//		flag.unlock_cmd = 1;
-//	}
+
 }
 ```
 
@@ -303,7 +321,88 @@ Drv_Uart.c里面直接替换UART4_IRQHandler(void)的数据
 		my_flag = 0;
 ```
 
-Ano_FlightDataCal.c里面直接设置高度数据
+Ano_FlightDataCal.c里面直接设置高度数据，不使用气压计
 ```c
 	ref_height_used = my_jig/10.0;
 ```
+
+* 5.0 openmv 定点和定线实现
+
+openmv的程序在forniMing.py里面
+
+Ano_OpenMv.c设置巡线、定点逻辑
+```c
+static void OpenMV_Data_Analysis(u8 *buf_data,u8 len)
+{
+	static int i = 0;
+	if(*(buf_data+3)==0x41)
+	{
+		i++;
+		if(i%10 == 0)
+		{
+			opmv.lt.angle = 0;
+			angle_right = 0;
+			Program_Ctrl_User_Set_YAWdps(0);	
+			// Program_Ctrl_User_Set_HXYcmps(0,0);
+		}
+		opmv.cb.color_flag = *(buf_data+5);
+		opmv.cb.sta = *(buf_data+6);
+		opmv.cb.pos_x = (s16)((*(buf_data+7)<<8)|*(buf_data+8));
+		opmv.cb.pos_y = (s16)((*(buf_data+9)<<8)|*(buf_data+10));
+	}
+	if(*(buf_data+3)==0x42)
+	{
+		i = 0;
+		angle_right = (s16)((*(buf_data+9)<<8)|*(buf_data+10));
+		if(ref_height_used > 90)
+		{		
+			if(opmv.lt.angle!=0 && angle_right != 0 && ABS(get_real(angle_right) - get_real(opmv.lt.angle)) < 35)
+			{
+					Program_Ctrl_User_Set_YAWdps(get_real(angle_right*0.8 + 0.2*opmv.lt.angle)*1.2 \
+																		+ (get_real(angle_right) - get_real(opmv.lt.angle))*0.12);	
+			}
+			// TODO 巡线直角还不稳定
+			if(ABS(get_real(angle_right)) > 20)
+			{
+				my_speed = 0;
+			// 高度大于90并且检测到线并且角度大于20即设置1，直接设置速度为0
+				my_corn_flag = 1;
+			}
+			else if(ABS(get_real(angle_right)) > 10)
+			{
+				my_speed = 5;
+			// 高度大于90并且检测到线并且角度大于10即设置速度为5
+				my_corn_flag = 0;
+			}
+			else
+			{
+				my_speed = 12;
+			// 高度大于90并且检测到线即复位
+				my_corn_flag = 0;
+			}
+			opmv.lt.angle = angle_right;
+		}
+	}
+	//
+	OpenMV_Check_Reset();
+}
+```
+
+Ano_FlightCtrl.c里面强制设置速度为0
+```
+	if(my_corn_flag == 1)
+	{
+		fs.speed_set_h[X] =  0;
+		fs.speed_set_h[Y] =  0;
+	}
+```
+
+* 6.0 姿态相关微调 40A电调 大疆2312电机
+
+config.h里面更改了相关参数
+```c
+#define GYR_ACC_FILTER 0.12f //陀螺仪加速度计滤波系数
+#define FINAL_P 			 0.48f  //电机输出量比例系数
+```
+
+Ano_Parameter.c里面准备更改PID相关参数（未动）

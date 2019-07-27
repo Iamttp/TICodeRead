@@ -20,33 +20,33 @@
 union Parameter Ano_Parame;
 _parameter_state_st para_sta;
 
-
+#define my_pid_par 1.0f
 void PID_Rest()
 {
 //---	姿态控制角速度环PID参数
-	Ano_Parame.set.pid_att_1level[ROL][KP] = 4.0f; //姿态控制角速度环PID参数
-	Ano_Parame.set.pid_att_1level[ROL][KI] = 4.0f; //姿态控制角速度环PID参数
-	Ano_Parame.set.pid_att_1level[ROL][KD] = 0.2f; //姿态控制角速度环PID参数
+	Ano_Parame.set.pid_att_1level[ROL][KP] = 4.0f*my_pid_par; //姿态控制角速度环PID参数
+	Ano_Parame.set.pid_att_1level[ROL][KI] = 4.0f*my_pid_par; //姿态控制角速度环PID参数
+	Ano_Parame.set.pid_att_1level[ROL][KD] = 0.2f*my_pid_par; //姿态控制角速度环PID参数
 	
-	Ano_Parame.set.pid_att_1level[PIT][KP] = 4.0f; //姿态控制角速度环PID参数
-	Ano_Parame.set.pid_att_1level[PIT][KI] = 4.0f; //姿态控制角速度环PID参数
-	Ano_Parame.set.pid_att_1level[PIT][KD] = 0.2f; //姿态控制角速度环PID参数
+	Ano_Parame.set.pid_att_1level[PIT][KP] = 4.0f*my_pid_par; //姿态控制角速度环PID参数
+	Ano_Parame.set.pid_att_1level[PIT][KI] = 4.0f*my_pid_par; //姿态控制角速度环PID参数
+	Ano_Parame.set.pid_att_1level[PIT][KD] = 0.2f*my_pid_par; //姿态控制角速度环PID参数
 	
-	Ano_Parame.set.pid_att_1level[YAW][KP] = 6.0f; //姿态控制角速度环PID参数
-	Ano_Parame.set.pid_att_1level[YAW][KI] = 0.5f; //姿态控制角速度环PID参数
-	Ano_Parame.set.pid_att_1level[YAW][KD] = 0.0f; //姿态控制角速度环PID参数
+	Ano_Parame.set.pid_att_1level[YAW][KP] = 6.0f*my_pid_par; //姿态控制角速度环PID参数
+	Ano_Parame.set.pid_att_1level[YAW][KI] = 0.5f*my_pid_par; //姿态控制角速度环PID参数
+	Ano_Parame.set.pid_att_1level[YAW][KD] = 0.0f*my_pid_par; //姿态控制角速度环PID参数
 //---	姿态控制角度环PID参数
-	Ano_Parame.set.pid_att_2level[ROL][KP] = 7.0f; //姿态控制角度环PID参数
-	Ano_Parame.set.pid_att_2level[ROL][KI] = 0.0f; //姿态控制角度环PID参数
-	Ano_Parame.set.pid_att_2level[ROL][KD] = 0.00f; //姿态控制角度环PID参数
+	Ano_Parame.set.pid_att_2level[ROL][KP] = 7.0f*my_pid_par; //姿态控制角度环PID参数
+	Ano_Parame.set.pid_att_2level[ROL][KI] = 0.0f*my_pid_par; //姿态控制角度环PID参数
+	Ano_Parame.set.pid_att_2level[ROL][KD] = 0.00f*my_pid_par; //姿态控制角度环PID参数
 	
-	Ano_Parame.set.pid_att_2level[PIT][KP] = 7.0f; //姿态控制角度环PID参数
-	Ano_Parame.set.pid_att_2level[PIT][KI] = 0.0f; //姿态控制角度环PID参数
-	Ano_Parame.set.pid_att_2level[PIT][KD] = 0.00f; //姿态控制角度环PID参数
+	Ano_Parame.set.pid_att_2level[PIT][KP] = 7.0f*my_pid_par; //姿态控制角度环PID参数
+	Ano_Parame.set.pid_att_2level[PIT][KI] = 0.0f*my_pid_par; //姿态控制角度环PID参数
+	Ano_Parame.set.pid_att_2level[PIT][KD] = 0.00f*my_pid_par; //姿态控制角度环PID参数
 	
-	Ano_Parame.set.pid_att_2level[YAW][KP] = 5.0f; //姿态控制角度环PID参数
-	Ano_Parame.set.pid_att_2level[YAW][KI] = 0.0f; //姿态控制角度环PID参数
-	Ano_Parame.set.pid_att_2level[YAW][KD] = 0.5; //姿态控制角度环PID参数	
+	Ano_Parame.set.pid_att_2level[YAW][KP] = 5.0f*my_pid_par; //姿态控制角度环PID参数
+	Ano_Parame.set.pid_att_2level[YAW][KI] = 0.0f*my_pid_par; //姿态控制角度环PID参数
+	Ano_Parame.set.pid_att_2level[YAW][KD] = 0.5f*my_pid_par; //姿态控制角度环PID参数	
 //---	高度控制高度速度环PID参数	
 	Ano_Parame.set.pid_alt_1level[KP] = 2.0f;          //高度控制高度速度环PID参数
 	Ano_Parame.set.pid_alt_1level[KI] = 1.0f;          //高度控制高度速度环PID参数

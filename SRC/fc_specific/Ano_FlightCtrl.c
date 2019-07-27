@@ -218,6 +218,8 @@ float max_speed_lim,vel_z_tmp[2];
 float my_speed = 0;
 
 float speed_set_tmp[2];
+extern u8 my_corn_flag;
+
 void Flight_State_Task(u8 dT_ms,s16 *CH_N)
 {
 	//s16 thr_deadzone;
@@ -289,15 +291,21 @@ void Flight_State_Task(u8 dT_ms,s16 *CH_N)
 	//飞控系统XY速度目标量综合设定
 	//speed_set_tmp[X] = fc_stv.vel_limit_xy *fs.speed_set_h_norm_lpf[X] + program_ctrl.vel_cmps_h[X] + pc_user.vel_cmps_set_h[X];
 	//speed_set_tmp[Y] = fc_stv.vel_limit_xy *fs.speed_set_h_norm_lpf[Y] + program_ctrl.vel_cmps_h[Y] + pc_user.vel_cmps_set_h[Y];
+	// TODO my_corn_flag
 	
 	speed_set_tmp[X] =  program_ctrl.vel_cmps_h[X] + pc_user.vel_cmps_set_h[X] + my_speed;
 	speed_set_tmp[Y] =  program_ctrl.vel_cmps_h[Y] + pc_user.vel_cmps_set_h[Y];
-	
+
 	length_limit(&speed_set_tmp[X],&speed_set_tmp[Y],fc_stv.vel_limit_xy,fs.speed_set_h_cms);
 
 	fs.speed_set_h[X] = fs.speed_set_h_cms[X];
 	fs.speed_set_h[Y] = fs.speed_set_h_cms[Y];	
 	
+	if(my_corn_flag == 1)
+	{
+		fs.speed_set_h[X] =  0;
+		fs.speed_set_h[Y] =  0;
+	}
 	/*调用检测着陆的函数*/
 	land_discriminat(dT_ms);
 	
@@ -516,7 +524,14 @@ void Fly_FixHeight()
 		}	
 		new_exp=(exp_high-ref_height_used);
 		/*设置上升速度*/ //120 P 0.8 D 0.2 -----------> 100 P 0.1~0.3
-		vel_z_tmp[0] = 0.8*new_exp+0.08*(new_exp-last_exp);
+		// 刚开始用较大PID起飞
+		if(ABS(new_exp) > 8)
+			vel_z_tmp[0] = 2*new_exp+0.2*(new_exp-last_exp);
+		else
+			vel_z_tmp[0] = 0.02*new_exp+0.002*(new_exp-last_exp);
+		if(ABS(vel_z_tmp[0]) < 1){
+			vel_z_tmp[0] = 0;
+		}
 		last_exp=new_exp;
 	}
 

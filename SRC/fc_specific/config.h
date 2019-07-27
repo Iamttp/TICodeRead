@@ -35,8 +35,10 @@
 //500~2000KV 0.4f~0.3f
 //2000kv以上 0.3f-0.1f
 //==
-#define GYR_ACC_FILTER 0.25f //陀螺仪加速度计滤波系数
-#define FINAL_P 			 0.35f  //电机输出量比例系数
+
+// 012 0.48 
+#define GYR_ACC_FILTER 0.12f //陀螺仪加速度计滤波系数
+#define FINAL_P 			 0.48f  //电机输出量比例系数
 
 #define MOTOR_ESC_TYPE 1  //2：无刷电机带刹车的电调，1：无刷电机不带刹车的电调，
 #define MOTORSNUM 4

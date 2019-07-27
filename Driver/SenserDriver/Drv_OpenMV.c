@@ -116,6 +116,8 @@ void OpenMV_Byte_Get(u8 bytedata)
 extern s32 baro_height,baro_h_offset,ref_height_get_1,ref_height_get_2,ref_height_used;
 s16 angle_right = 0;
 extern float my_speed, speed_set_tmp[2];
+u8 my_corn_flag = 0;
+
 static s16 get_real(s16 angle)
 {
 	if(angle > 90)
@@ -147,25 +149,30 @@ static void OpenMV_Data_Analysis(u8 *buf_data,u8 len)
 		i = 0;
 		angle_right = (s16)((*(buf_data+9)<<8)|*(buf_data+10));
 		if(ref_height_used > 90)
-		{				
+		{		
 			if(opmv.lt.angle!=0 && angle_right != 0 && ABS(get_real(angle_right) - get_real(opmv.lt.angle)) < 35)
 			{
 					Program_Ctrl_User_Set_YAWdps(get_real(angle_right*0.8 + 0.2*opmv.lt.angle)*1.2 \
 																		+ (get_real(angle_right) - get_real(opmv.lt.angle))*0.12);	
 			}
-			// TODO 
-//			if(angle_right - opmv.lt.angle > 40)
-//				my_speed = -50;
-//			else
-//				my_speed = 50;
-			if(ABS(get_real(angle_right)) > 10)
+			// TODO 巡线直角还不稳定
+			if(ABS(get_real(angle_right)) > 20)
 			{
 				my_speed = 0;
-				speed_set_tmp[X] = 0;
+			// 高度大于90并且检测到线并且角度大于20即设置1，直接设置速度为0
+				my_corn_flag = 1;
+			}
+			else if(ABS(get_real(angle_right)) > 10)
+			{
+				my_speed = 5;
+			// 高度大于90并且检测到线并且角度大于10即设置速度为5
+				my_corn_flag = 0;
 			}
 			else
 			{
-				my_speed = 20;
+				my_speed = 12;
+			// 高度大于90并且检测到线即复位
+				my_corn_flag = 0;
 			}
 			opmv.lt.angle = angle_right;
 		}
