@@ -15,18 +15,8 @@ blue_led  = LED(3)
 clock = time.clock()#初始化时钟
 uart = UART(3,500000)#初始化串口 波特率 500000
 
-thresholds = [0, 70]#自定义灰度阈值
-fthresholds = [70, 256]#自定义灰度阈值
-
-# up_roi   = [0,   0, 80, 15]#上采样区0
-# down_roi = [0, 55, 80, 15]#下采样区0
-# left_roi = [0,   0, 25, 60]#左采样区0
-# righ_roi = [55, 0,  25, 40]#右采样区0
-
-up_roi   = [0,   0, 160, 30]#上采样区0
-down_roi = [0, 110, 160, 30]#下采样区0
-left_roi = [0,   0, 50, 120]#左采样区0
-righ_roi = [110, 0,  50, 80]#右采样区0
+thresholds = [0, 100]#自定义灰度阈值
+fthresholds = [100, 256]#自定义灰度阈值
 
 class Dot(object):
     x = 0
@@ -44,13 +34,6 @@ class singleline_check():
     theta_err = 0
 
 dot  = Dot()
-
-dot  = Dot()
-up   = singleline_check()
-down = singleline_check()
-left = singleline_check()
-righ = singleline_check()
-line = singleline_check()
 singleline_check = singleline_check()
 
 #点检测数据打包
@@ -81,12 +64,13 @@ def pack_dot_data():
 
 #线检测数据打包
 def pack_linetrack_data():
+    #resize(img,img,Size(80,60))
     rho = int(singleline_check.rho_err)
     theta = int(singleline_check.theta_err)
 
     # 有些数据还未用到，但是为了统一。
     pack_data=bytearray([0xaa,0x29,0x05,0x42,0x07,
-        line.flag,line.flag,
+        1,1,
         rho>>8,rho,
         theta>>8,theta,
         0x00,0x00])
@@ -108,34 +92,14 @@ def pack_linetrack_data():
 
     return pack_data
 
-def fine_border(img,area,area_roi):
-    #roi是“感兴趣区”通过设置不同的感兴趣区，可以判断线段是一条还是两条，是T型线，还是十字、还是7字线
-    singleline_check.flag1 = img.get_regression([(255,255)],roi=area_roi, robust = True)
-    if (singleline_check.flag1):
-        area.ok=1
-
 #找线
 def found_line(img):
-    fine_border(img,up,up_roi) #上边界区域检测
-    fine_border(img,down,down_roi) #下边界区域检测
-    fine_border(img,left,left_roi) #左边界区域检测
-    fine_border(img,righ,righ_roi) #右边界区域检测
-
-    line.flag = 0
-    if up.ok:
-        line.flag = line.flag | 0x01 #将line.flag最低位置1
-    if down.ok:
-        line.flag = line.flag | 0x02 #将line.flag第2位置1
-    if left.ok:
-        line.flag = line.flag | 0x04 #将line.flag第3位置1
-    if righ.ok:
-        line.flag = line.flag | 0x08 #将line.flag第4位置1
-    #print(line.flag)     #做测试用，在正常检测时最好屏蔽掉
 
     #对图像所有阈值像素进行线性回归计算。这一计算通过最小二乘法进行，通常速度较快，但不能处理任何异常值。 若 robust 为True，则将
     #使用泰尔指数。泰尔指数计算图像中所有阈值像素间的所有斜率的中值。thresholds：追踪的颜色范围
     singleline_check.flag2 = img.get_regression([(0,0)], robust = True)
-    if (singleline_check.flag2):
+    if (singleline_check.flag2 and int(singleline_check.flag2.magnitude()) > 20):
+        #print(singleline_check.flag2)
         #print(clock.fps())
         singleline_check.rho_err = abs(singleline_check.flag2.rho())-0 #求解线段偏移量的绝对值
         # TODO 180-
@@ -143,15 +107,8 @@ def found_line(img):
         #在图像中画一条直线。singleline_check.flag2.line()意思是(x0, y0)到(x1, y1)的直线；颜色可以是灰度值(0-255)，或者是彩色值
         #(r, g, b)的tupple，默认是白色
         img.draw_line(singleline_check.flag2.line(), color = 127)
-    #清零标志位
-    up.ok = down.ok = left.ok = righ.ok = 0
-    up.num = down.num = left.num = righ.num = 0
-    up.pixels = down.pixels = left.pixels = righ.pixels = 0
-
-
-    if line.flag != 0:
         res = pack_linetrack_data()
-        print(res)
+        #print(res)
         uart.write(res)
 
 #点检测函数
@@ -194,10 +151,12 @@ while(True):
     ##先对图像进行分割，二值化，将在阈值内的区域变为白色，阈值外区域变为黑色
     img.binary([fthresholds])
 
-    #点检测
-    check_dot(img)
-    if i%10:
+    #TODO 黑点过多判断
+    if i%5 == 0:
         found_line(img)
+    else:
+        #点检测
+        check_dot(img)
     blue_led.on()
-    if i%50:
+    if i%50 != 0:
         blue_led.off()
